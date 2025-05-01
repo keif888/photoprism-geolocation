@@ -382,10 +382,14 @@ function updatePhoto(photo, latitude, longitude)
             }
             
             // Get the session ID and auth token from localStorage (in different ways to support multiple versions of PhotoPrism)
-            var session_id = localStorage.getItem('session_id');
-            var sessionId = localStorage.getItem('sessionId');
-            var sessionIDToUse = sessionId !== null ? sessionId : session_id;
-            var authToken = localStorage.getItem('authToken');
+            var sessionIdClassic = localStorage.getItem('sessionId');
+            var sessionIdUnderscore = localStorage.getItem('session_id');
+            var sessionIdDot = localStorage.getItem('session.id'); 
+            var authTokenClassic = localStorage.getItem('authToken');
+            var authTokenDot = localStorage.getItem('session.token')
+
+            var sessionIDToUse = sessionIdClassic || sessionIdUnderscore || sessionIdDot;
+            var authTokenToUse = authTokenClassic || authTokenDot;
             
             var fetchURL = hostUrl + "/api/v1/photos/" + photo;
             var fetchProperties = {
@@ -393,7 +397,7 @@ function updatePhoto(photo, latitude, longitude)
                         "accept": "application/json, text/plain, */*",
                         "content-type": "application/json",
                         "x-session-id": sessionIDToUse, // Use the session ID retrieved from localStorage
-                        "x-auth-token": authToken,
+                        "x-auth-token": authTokenToUse,
                     },
                     "body": JSON.stringify({"Lat": parseFloat(latitude), "Lng": parseFloat(longitude), "PlaceSrc": "manual"}),
                     "method": "PUT",
